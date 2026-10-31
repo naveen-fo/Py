@@ -1,27 +1,23 @@
-# PyStep: learn Python in the browser
+# PyStep: learn Python in a 3D world
 
-React + Vite app. Python runs in the browser with Pyodide. Works as a PWA and as an Android APK (Capacitor).
+All files are in the repo root (no folders). React + Vite + Three.js. Python runs in the browser (Pyodide).
 
-## Run locally
-```
-npm install
-npm run dev
-```
+## Step 1: upload
+Upload every file from this zip to the root of your GitHub repo (branch `main`).
 
-## Add lessons
-Open `src/curriculum.js` and add a line like `L(title, explanation, starterCode, expectedOutput)` to a level.
-A lesson is marked done when the code's printed output equals `expectedOutput`.
+## Step 2: add the two workflow files (GitHub needs a folder for these)
+`android-apk.yml` and `deploy-pwa.yml` in this zip are only copies. GitHub runs workflows only from `.github/workflows/`.
+For each one: repo > Add file > Create new file > in the name box type `.github/workflows/android-apk.yml`
+(typing `/` makes the folders) > paste the file content > Commit. Repeat with `.github/workflows/deploy-pwa.yml`.
 
-## PWA (installable)
-1. Push this project to a GitHub repo (branch `main`).
-2. Repo Settings > Pages > Source: **GitHub Actions**.
-3. The `Deploy PWA` workflow publishes the site. Open the link on your phone and choose **Install app** or **Add to Home screen**.
+## PWA
+Settings > Pages > Source: **GitHub Actions**. After the `Deploy PWA` run finishes, open the link on your phone and choose Install app.
 
 ## Android APK
-1. Push to `main` (or run the `Build Android APK` workflow manually from the Actions tab).
-2. Open the finished run and download the `pystep-debug-apk` artifact. Unzip it and install `app-debug.apk` on your phone.
-3. For Play Store you need a signed release build (keystore stored in GitHub Secrets). This is not set up yet.
+Actions tab > **Build Android APK** > Run workflow. When done, download the `pystep-debug-apk` artifact and install `app-debug.apk`.
 
-## Notes
-- Python files load from a CDN the first time, so the first run needs internet. After that the PWA caches them.
-- Run `npm install` locally once and commit `package-lock.json`; then you can use `npm ci` in the workflows.
+## Add lessons
+Add a line `L(title, explanation, starterCode, expectedOutput)` in `curriculum.js`.
+
+## Blank white page?
+The page now shows an error message instead of staying blank. Also check that Pages Source is **GitHub Actions**, not "Deploy from a branch".

@@ -3,14 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#2F5BEA" />
-    <meta name="description" content="Learn Python from basic to advanced, right in your browser." />
+    <meta name="theme-color" content="#0B1020" />
+    <meta name="description" content="Learn Python from basic to advanced in a 3D world." />
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="pwa-192.png" />
-    <title>PyStep: Learn Python</title>
+    <title>PyStep: Learn Python in 3D</title>
   </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+  <body style="margin:0;background:#0b1020;color:#e8eeff">
+    <div id="root"><p style="font:16px system-ui,sans-serif;padding:24px">Loading PyStep...</p></div>
+    <script>
+      // Shows the real problem instead of a blank page (for example when the source index.html is served without a build).
+      window.addEventListener('error', function (e) {
+        var r = document.getElementById('root');
+        if (r && r.textContent.indexOf('Loading PyStep') === 0) {
+          var t = e.target || {};
+          r.innerHTML = '<pre style="padding:16px;white-space:pre-wrap;font:14px monospace">Error: ' +
+            (e.message || 'could not load ' + (t.src || t.href || 'a file')) + '</pre>';
+        }
+      }, true);
+    </script>
+    <script type="module" src="/main.jsx"></script>
   </body>
 </html>

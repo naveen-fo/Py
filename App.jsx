@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { LEVELS } from './curriculum.js';
 import { getPyodide, runPython } from './python.js';
+import Scene3D from './Scene3D.jsx';
 
 const ALL = LEVELS.flatMap((l) => l.lessons.map((x) => ({ ...x, level: l.name })));
 
@@ -26,13 +27,15 @@ const MESSAGES = {
 };
 
 export default function App() {
-  const [i, setI] = useState(() => Math.min(read('pystep-cur', 0), ALL.length - 1));
+  const start = Math.min(Math.max(Number(read('pystep-cur', 0)) || 0, 0), ALL.length - 1);
+  const [i, setI] = useState(start);
   const [done, setDone] = useState(() => read('pystep-done', []));
-  const [code, setCode] = useState(() => ALL[Math.min(read('pystep-cur', 0), ALL.length - 1)].c);
+  const [code, setCode] = useState(ALL[start].c);
   const [out, setOut] = useState('');
   const [state, setState] = useState('idle');
   const [ready, setReady] = useState(false);
   const [menu, setMenu] = useState(false);
+  const [open, setOpen] = useState(true);
   const lesson = ALL[i];
 
   useEffect(() => {
@@ -50,6 +53,7 @@ export default function App() {
     setOut('');
     setState('idle');
     setMenu(false);
+    setOpen(true);
     write('pystep-cur', n);
   };
 
@@ -80,8 +84,10 @@ export default function App() {
   };
 
   return (
-    <>
-      <header className="top">
+    <div className="app">
+      <Scene3D lessons={ALL} current={i} done={done} open={open} onSelect={go} />
+
+      <header className="top glass">
         <div className="logo">
           <span className="mark">Py</span>
           PyStep
@@ -90,14 +96,14 @@ export default function App() {
           <span>
             {done.length} of {ALL.length} done
           </span>
-          <button className="menu" onClick={() => setMenu(!menu)} aria-expanded={menu}>
+          <button className="pill" onClick={() => setMenu(!menu)} aria-expanded={menu}>
             Lessons
           </button>
         </div>
       </header>
 
-      <div className="layout">
-        <nav className={'side' + (menu ? ' open' : '')} aria-label="Lessons">
+      {menu && (
+        <nav className="drawer glass" aria-label="Lessons">
           <div className="bar" aria-hidden="true">
             <i style={{ width: (done.length / ALL.length) * 100 + '%' }} />
           </div>
@@ -124,18 +130,26 @@ export default function App() {
             </div>
           ))}
         </nav>
+      )}
 
-        <main>
-          <section className="card">
+      <p className="tip">Tap a planet to open its lesson</p>
+
+      <section className={'sheet glass' + (open ? ' open' : '')} aria-label="Current lesson">
+        <div className="sheet-head">
+          <div>
             <p className="sub">
               {lesson.level}, lesson {i + 1} of {ALL.length}
             </p>
             <h1>{lesson.t}</h1>
-            <p>{lesson.e}</p>
-          </section>
+          </div>
+          <button className="pill" onClick={() => setOpen(!open)} aria-expanded={open}>
+            {open ? 'Hide lesson' : 'Open lesson'}
+          </button>
+        </div>
 
-          <section className="card">
-            <h2>Your turn</h2>
+        {open && (
+          <div className="sheet-body">
+            <p>{lesson.e}</p>
             <div className="grid">
               <div>
                 <label className="lab" htmlFor="code">
@@ -166,7 +180,7 @@ export default function App() {
                 {state === 'running' ? 'Running...' : 'Run code'}
               </button>
               <button
-                className="ghost"
+                className="pill"
                 onClick={() => {
                   setCode(lesson.c);
                   setOut('');
@@ -178,16 +192,16 @@ export default function App() {
               {MESSAGES[state] && <span className={'msg ' + state}>{MESSAGES[state]}</span>}
             </div>
             <div className="row pager">
-              <button className="ghost" disabled={i === 0} onClick={() => go(i - 1)}>
+              <button className="pill" disabled={i === 0} onClick={() => go(i - 1)}>
                 Previous lesson
               </button>
-              <button className="ghost" disabled={i === ALL.length - 1} onClick={() => go(i + 1)}>
+              <button className="pill" disabled={i === ALL.length - 1} onClick={() => go(i + 1)}>
                 Next lesson
               </button>
             </div>
-          </section>
-        </main>
-      </div>
-    </>
+          </div>
+        )}
+      </section>
+    </div>
   );
 }
